@@ -13,5 +13,16 @@
             "email": "maa.thijsde@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "nette/php-generator": "^4.0",
+        "opis/json-schema": "^2.3",
+        "spatie/laravel-activitylog": "*"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "SailingDeveloper\\LaravelGenerator\\LaravelGeneratorServiceProvider"
+            ]
+        }
+    }
 }

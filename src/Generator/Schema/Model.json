@@ -1,0 +1,614 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "label": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Za-z ]+$"
+        },
+        "required": {
+            "type": "boolean",
+            "default": false
+        },
+        "computed": {
+            "type": "boolean",
+            "default": true
+        },
+        "rules": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "examples": [
+                    "email",
+                    "phone_number",
+                    "color",
+                    "emoji"
+                ]
+            }
+        },
+        "className": {
+            "anyOf": [
+                {
+                    "type": "string",
+                    "pattern": "^App(\\\\[A-Z][a-zA-Z]+)+$"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^App(\\\\\\\\[A-Z][a-zA-Z]+)+$"
+                }
+            ]
+        },
+        "nova": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "pattern": "^[A-Z][A-Za-z]+$"
+                },
+                "help": {
+                    "type": "string"
+                },
+                "shouldShowOnIndex": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "shouldShowOnDetail": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "shouldShowWhenCreating": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "shouldShowWhenUpdating": {
+                    "type": "boolean",
+                    "default": false
+                }
+            },
+            "additionalProperties": false
+        },
+        "request": {
+            "type": "object",
+            "properties": {
+                "required": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "get": {
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": false
+                        },
+                        {
+                            "type": "string",
+                            "const": "conditional"
+                        }
+                    ]
+                },
+                "create": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "update": {
+                    "type": "boolean",
+                    "default": true
+                }
+            },
+            "additionalProperties": false
+        },
+        "index": {
+            "type": "string",
+            "pattern": "^[a-z][a-z_]+$",
+            "minLength": 1
+        },
+        "comment": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9a-z_’.,\\s]+\\.$"
+        }
+    },
+    "type": "object",
+    "required": [
+        "version",
+        "owner",
+        "date",
+        "description",
+        "title",
+        "relations",
+        "properties"
+    ],
+    "properties": {
+        "version": {
+            "type": "integer",
+            "enum": [
+                1
+            ],
+            "default": 1
+        },
+        "owner": {
+            "type": "string",
+            "pattern": "^[A-Z][ a-zA-Z]+[a-zA-Z] <.+@.+\\..+>$"
+        },
+        "date": {
+            "type": "string",
+            "pattern": "^\\d{4}\\d{2}\\d{2}$"
+        },
+        "description": {"$ref": "#/definitions/comment"},
+        "observer": {
+            "type": "boolean",
+            "default": true
+        },
+        "title": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "pattern": "^[a-z][a-z_]+$"
+            }
+        },
+        "mixins": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "oneOf": [
+                    {
+                        "type": "object",
+                        "required": [
+                            "name"
+                        ],
+                        "additionalProperties": false,
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "enum": [
+                                    "REVIEW",
+                                    "SOFT_DELETE"
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "type": "object",
+                        "required": [
+                            "name",
+                            "address"
+                        ],
+                        "additionalProperties": false,
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "const": "GEOLOCATION"
+                            },
+                            "address": {
+                                "type": "boolean",
+                                "default": true
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "table": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "pattern": "^[a-z][a-z_]+$",
+                    "minLength": 1
+                },
+                "unique": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "log": {
+                    "type": "boolean",
+                    "default": false
+                }
+            },
+            "additionalProperties": false
+        },
+        "ulidPrefix": {
+            "type": "string",
+            "pattern": "^[a-z][a-z_]+$",
+            "minLength": 3,
+            "maxLength": 3
+        },
+        "request": {"$ref": "#/definitions/request"},
+        "relations": {
+            "type": "object",
+            "patternProperties": {
+                "^[a-z][a-z_]*$": {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "required": [
+                                "with",
+                                "type",
+                                "required"
+                            ],
+                            "properties": {
+                                "with": {
+                                    "type": "string",
+                                    "const": "User"
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "const": "BELONGS_TO"
+                                },
+                                "foreignKey": {
+                                    "type": "string",
+                                    "pattern": "^[a-z][a-z_]+_id$"
+                                },
+                                "event": {
+                                    "type": "boolean",
+                                    "default": true
+                                },
+                                "required": {"$ref": "#/definitions/required"},
+                                "index": {"$ref": "#/definitions/index"},
+                                "request": {"$ref": "#/definitions/request"},
+                                "nova": {"$ref": "#/definitions/nova"},
+                                "//": {"$ref": "#/definitions/comment"}
+                            },
+                            "additionalProperties": false
+                        },
+                        {
+                            "type": "object",
+                            "required": [
+                                "with",
+                                "type",
+                                "required"
+                            ],
+                            "properties": {
+                                "with": {
+                                    "type": "string",
+                                    "pattern": "^[A-Z][a-zA-Z]+$",
+                                    "not": {
+                                        "const": "User"
+                                    }
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "const": "BELONGS_TO"
+                                },
+                                "foreignKey": {
+                                    "type": "string",
+                                    "pattern": "^[a-z][a-z_]+_id$"
+                                },
+                                "createCounterRelation": {
+                                    "type": "boolean",
+                                    "default": false
+                                },
+                                "eager": {
+                                    "type": "boolean",
+                                    "default": false
+                                },
+                                "required": {"$ref": "#/definitions/required"},
+                                "index": {"$ref": "#/definitions/index"},
+                                "request": {"$ref": "#/definitions/request"},
+                                "nova": {"$ref": "#/definitions/nova"},
+                                "//": {"$ref": "#/definitions/comment"}
+                            },
+                            "additionalProperties": false
+                        },
+                        {
+                            "type": "object",
+                            "required": [
+                                "with",
+                                "type"
+                            ],
+                            "properties": {
+                                "with": {
+                                    "type": "string",
+                                    "pattern": "^[A-Z][a-zA-Z]+$"
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "const": "HAS_MANY"
+                                },
+                                "foreignKey": {
+                                    "type": "string",
+                                    "pattern": "^[a-z][a-z_]+_id$"
+                                },
+                                "eager": {
+                                    "type": "boolean",
+                                    "default": false
+                                },
+                                "computed": {"$ref": "#/definitions/computed"},
+                                "request": {"$ref": "#/definitions/request"},
+                                "nova": {"$ref": "#/definitions/nova"},
+                                "//": {"$ref": "#/definitions/comment"}
+                            },
+                            "additionalProperties": false
+                        },
+                        {
+                            "type": "object",
+                            "required": [
+                                "type",
+                                "with"
+                            ],
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "const": "POLYMORPHIC"
+                                },
+                                "with": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string",
+                                        "pattern": "^[A-Z][a-zA-Z]+$"
+                                    }
+                                },
+                                "eager": {
+                                    "type": "boolean",
+                                    "default": false
+                                },
+                                "required": {"$ref": "#/definitions/required"},
+                                "index": {"$ref": "#/definitions/index"},
+                                "computed": {"$ref": "#/definitions/computed"},
+                                "request": {"$ref": "#/definitions/request"},
+                                "nova": {"$ref": "#/definitions/nova"},
+                                "//": {"$ref": "#/definitions/comment"}
+                            },
+                            "additionalProperties": false
+                        }
+                    ]
+                }
+            },
+            "additionalProperties": false
+        },
+        "properties": {
+            "type": "object",
+            "patternProperties": {
+                "^[a-z][a-z_]*$": {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "required": [
+                                "type",
+                                "required"
+                            ],
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "enum": [
+                                        "STRING",
+                                        "TEXT",
+                                        "INTEGER",
+                                        "TIMESTAMP",
+                                        "GEOLOCATION",
+                                        "POINT"
+                                    ]
+                                },
+                                "label": {"$ref": "#/definitions/label"},
+                                "required": {"$ref": "#/definitions/required"},
+                                "computed": {"$ref": "#/definitions/required"},
+                                "rules": {"$ref": "#/definitions/rules"},
+                                "index": {"$ref": "#/definitions/index"},
+                                "request": {"$ref": "#/definitions/request"},
+                                "nova": {"$ref": "#/definitions/nova"},
+                                "//": {"$ref": "#/definitions/comment"}
+                            },
+                            "additionalProperties": false
+                        },
+                        {
+                            "type": "object",
+                            "required": [
+                                "type",
+                                "choices",
+                                "required"
+                            ],
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "const": "ENUM"
+                                },
+                                "choices": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "required": [
+                                            "name",
+                                            "index"
+                                        ],
+                                        "properties": {
+                                            "name": {
+                                                "type": "string",
+                                                "pattern": "^[A-Z_]+$"
+                                            },
+                                            "index": {
+                                                "type": "integer"
+                                            },
+                                            "color": {
+                                                "type": "string",
+                                                "enum": [
+                                                    "info",
+                                                    "success",
+                                                    "warning",
+                                                    "danger"
+                                                ]
+                                            }
+                                        },
+                                        "additionalProperties": false
+                                    },
+                                    "minItems": 1,
+                                    "additionalItems": false
+                                },
+                                "label": {"$ref": "#/definitions/label"},
+                                "required": {"$ref": "#/definitions/required"},
+                                "computed": {"$ref": "#/definitions/required"},
+                                "rules": {"$ref": "#/definitions/rules"},
+                                "index": {"$ref": "#/definitions/index"},
+                                "request": {"$ref": "#/definitions/request"},
+                                "nova": {"$ref": "#/definitions/nova"},
+                                "//": {"$ref": "#/definitions/comment"}
+                            },
+                            "additionalProperties": false
+                        },
+                        {
+                            "type": "object",
+                            "required": [
+                                "type",
+                                "choices",
+                                "required"
+                            ],
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "const": "ENUM"
+                                },
+                                "choices": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "required": ["name"],
+                                        "properties": {
+                                            "name": {
+                                                "type": "string",
+                                                "pattern": "^[A-Z_]+$"
+                                            },
+                                            "value": {
+                                                "type": "string"
+                                            },
+                                            "color": {
+                                                "type": "string",
+                                                "enum": [
+                                                    "info",
+                                                    "success",
+                                                    "warning",
+                                                    "danger"
+                                                ]
+                                            }
+                                        },
+                                        "additionalProperties": false
+                                    },
+                                    "minItems": 1,
+                                    "additionalItems": false
+                                },
+                                "label": {"$ref": "#/definitions/label"},
+                                "required": {"$ref": "#/definitions/required"},
+                                "computed": {"$ref": "#/definitions/required"},
+                                "rules": {"$ref": "#/definitions/rules"},
+                                "index": {"$ref": "#/definitions/index"},
+                                "request": {"$ref": "#/definitions/request"},
+                                "nova": {"$ref": "#/definitions/nova"},
+                                "//": {"$ref": "#/definitions/comment"}
+                            },
+                            "additionalProperties": false
+                        },
+                        {
+                            "type": "object",
+                            "required": [
+                                "type",
+                                "enum",
+                                "required"
+                            ],
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "const": "ENUM"
+                                },
+                                "enum": {"$ref": "#/definitions/className"},
+                                "label": {"$ref": "#/definitions/label"},
+                                "required": {"$ref": "#/definitions/required"},
+                                "computed": {"$ref": "#/definitions/required"},
+                                "rules": {"$ref": "#/definitions/rules"},
+                                "index": {"$ref": "#/definitions/index"},
+                                "request": {"$ref": "#/definitions/request"},
+                                "nova": {"$ref": "#/definitions/nova"},
+                                "//": {"$ref": "#/definitions/comment"}
+                            },
+                            "additionalProperties": false
+                        },
+                        {
+                            "type": "object",
+                            "required": [
+                                "type",
+                                "required",
+                                "initial"
+                            ],
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "const": "JSON_OBJECT"
+                                },
+                                "initial": {
+                                    "type": "string"
+                                },
+                                "label": {"$ref": "#/definitions/label"},
+                                "required": {"$ref": "#/definitions/required"},
+                                "computed": {"$ref": "#/definitions/required"},
+                                "rules": {"$ref": "#/definitions/rules"},
+                                "index": {"$ref": "#/definitions/index"},
+                                "request": {"$ref": "#/definitions/request"},
+                                "nova": {"$ref": "#/definitions/nova"},
+                                "//": {"$ref": "#/definitions/comment"}
+                            },
+                            "additionalProperties": false
+                        },
+                        {
+                            "type": "object",
+                            "required": [
+                                "type",
+                                "required",
+                                "initial"
+                            ],
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "const": "JSON_ARRAY"
+                                },
+                                "initial": {
+                                    "type": "string"
+                                },
+                                "label": {"$ref": "#/definitions/label"},
+                                "required": {"$ref": "#/definitions/required"},
+                                "computed": {"$ref": "#/definitions/required"},
+                                "rules": {"$ref": "#/definitions/rules"},
+                                "index": {"$ref": "#/definitions/index"},
+                                "request": {"$ref": "#/definitions/request"},
+                                "nova": {"$ref": "#/definitions/nova"},
+                                "//": {"$ref": "#/definitions/comment"}
+                            },
+                            "additionalProperties": false
+                        },
+                        {
+                            "type": "object",
+                            "required": [
+                                "type",
+                                "required"
+                            ],
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "enum": [
+                                        "FILE",
+                                        "FILE[]",
+                                        "IMAGE",
+                                        "IMAGE[]",
+                                        "VIDEO",
+                                        "VIDEO[]"
+                                    ]
+                                },
+                                "asynchronousUpload": {
+                                    "type": "boolean",
+                                    "default": true
+                                },
+                                "label": {"$ref": "#/definitions/label"},
+                                "required": {"$ref": "#/definitions/required"},
+                                "computed": {"$ref": "#/definitions/required"},
+                                "rules": {"$ref": "#/definitions/rules"},
+                                "index": {"$ref": "#/definitions/index"},
+                                "request": {"$ref": "#/definitions/request"},
+                                "nova": {"$ref": "#/definitions/nova"},
+                                "//": {"$ref": "#/definitions/comment"}
+                            },
+                            "additionalProperties": false
+                        }
+                    ]
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "additionalProperties": false
+}
