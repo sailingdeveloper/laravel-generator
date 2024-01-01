@@ -1,0 +1,17 @@
+{
+    "name": "sailingdeveloper/laravel-generator",
+    "description": "Generate models, migrations, events, observers, Nova, form requests, resources from one model definition file.",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "SailingDeveloper\\LaravelGenerator\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Thijs de Maa",
+            "email": "maa.thijsde@gmail.com"
+        }
+    ],
+    "require": {}
+}
