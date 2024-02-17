@@ -34,6 +34,7 @@ use SailingDeveloper\LaravelGenerator\Generator\Model\GeneratorObserver;
 use SailingDeveloper\LaravelGenerator\Generator\Model\GeneratorQuery;
 use SailingDeveloper\LaravelGenerator\Generator\Model\GeneratorRequest;
 use SailingDeveloper\LaravelGenerator\Generator\Model\GeneratorResource;
+use SailingDeveloper\LaravelGenerator\Generator\Model\GeneratorTypeScriptType;
 use SailingDeveloper\LaravelGenerator\Lib\JsonLib;
 use Exception;
 use Illuminate\Console\Command;
@@ -52,7 +53,7 @@ use Opis\JsonSchema\Validator;
  */
 class GeneratorCommand extends Command
 {
-    protected $signature = 'generate {only?} {--migration=}';
+    protected $signature = 'generate {only?} {--migration=} {--export-types}';
 
     /**
      * @var array<string, ModelDefinition>
@@ -236,6 +237,26 @@ class GeneratorCommand extends Command
                     $this->error(sprintf('Migration option %s invalid.', json_encode($migration)));
 
                     return 1;
+                }
+            }
+        }
+
+        if ($this->argument('only')) {
+            $this->comment('Not generating TypeScript types for single model.');
+        } else {
+            // Group models by domain
+            $modelsByDomain = collect($allModel)
+                ->groupBy(fn(ModelDefinition $model) => str_replace('App\\', '', $model->namespace->getName()))
+                ->map(fn(Collection $models) => $models->map(fn(ModelDefinition $model) => $model));
+
+            foreach ($modelsByDomain as $domain => $models) {
+                $typeScriptTypeGenerator = new GeneratorTypeScriptType($domain, $models);
+                $typeScriptTypeGenerator->generateTypeScriptTypeFile();
+
+                if ($this->option('export-types')) {
+                    $directory = env('FRONTEND_DIRECTORY') ?? throw new Exception('FRONTEND_DIRECTORY not set.');
+
+                    $typeScriptTypeGenerator->copyTypeScriptTypeFiles($directory);
                 }
             }
         }

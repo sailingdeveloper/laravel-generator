@@ -36,7 +36,7 @@ class PropertyCollection extends Collection
      */
     public function getRelation(): PropertyCollection
     {
-        return $this->filter(fn (PropertyDefinition $property) => $property->isFromRelation);
+        return $this->filter(fn (PropertyDefinition $property) => $property->fromRelation instanceof RelationDefinition);
     }
 
     /**
@@ -44,7 +44,7 @@ class PropertyCollection extends Collection
      */
     public function getNonRelation(): PropertyCollection
     {
-        return $this->filter(fn (PropertyDefinition $property) => $property->isFromRelation === false);
+        return $this->filter(fn (PropertyDefinition $property) => $property->fromRelation === null);
     }
 
     /**
@@ -188,7 +188,8 @@ class PropertyCollection extends Collection
                     PropertyTypeEnum::IMAGE_COLLECTION,
                     PropertyTypeEnum::VIDEO,
                     PropertyTypeEnum::VIDEO_COLLECTION,
-                    PropertyTypeEnum::ADDRESS => false,
+                    PropertyTypeEnum::ADDRESS,
+                    PropertyTypeEnum::MONEY_AMOUNT, => false,
                 },
             )
             ->filter(fn (PropertyDefinition $property): bool => $property->index !== null);
@@ -271,7 +272,7 @@ class PropertyCollection extends Collection
             function (PropertyDefinition $propertyDefinition): int {
                 if ($propertyDefinition->isInherited) {
                     return 0;
-                } elseif ($propertyDefinition->isFromRelation) {
+                } elseif ($propertyDefinition->fromRelation instanceof RelationDefinition) {
                     return 1;
                 } else {
                     return 2;

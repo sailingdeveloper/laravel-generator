@@ -5,6 +5,7 @@ namespace SailingDeveloper\LaravelGenerator\Generator\Definition;
 use App\Address\Cast\AddressCast;
 use App\Address\Object\Address;
 use App\Emoji\Rule\Emoji;
+use Brick\Money\Money;
 use SailingDeveloper\LaravelGenerator\Generator\Definition\Enum\PropertyTypeEnum;
 use SailingDeveloper\LaravelGenerator\Generator\Definition\Enum\RequestTypeEnum;
 use App\Geolocation\Cast\GeolocationCast;
@@ -25,6 +26,7 @@ use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Textarea;
+use SailingDeveloper\LaravelGenerator\MoneyAmount\Cast\MoneyAmountCast;
 use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
 
 /**
@@ -49,7 +51,7 @@ class PropertyDefinition extends Definition
         public NovaDefinition $novaPropertyDefinition,
         public ?string $index,
         public bool $isInherited = false,
-        public bool $isFromRelation = false,
+        public ?RelationDefinition $fromRelation = null,
     ) {
         parent::__construct($name);
     }
@@ -74,6 +76,7 @@ class PropertyDefinition extends Definition
             PropertyTypeEnum::IMAGE_COLLECTION,
             PropertyTypeEnum::VIDEO_COLLECTION => MediaCollection::class,
             PropertyTypeEnum::ADDRESS => Address::class,
+            PropertyTypeEnum::MONEY_AMOUNT => Money::class,
             PropertyTypeEnum::ENUM => throw new Exception(
                 sprintf('Enum property should be instance of "%s"', EnumPropertyDefinition::class)
             ),
@@ -94,6 +97,7 @@ class PropertyDefinition extends Definition
             PropertyTypeEnum::GEOLOCATION => GeolocationCast::class,
             PropertyTypeEnum::POINT => PointCast::class,
             PropertyTypeEnum::ADDRESS => AddressCast::class,
+            PropertyTypeEnum::MONEY_AMOUNT => MoneyAmountCast::class,
             PropertyTypeEnum::ENUM => throw new Exception(
                 sprintf('Enum property should be instance of "%s"', EnumPropertyDefinition::class)
             ),
@@ -124,6 +128,7 @@ class PropertyDefinition extends Definition
                 PropertyTypeEnum::GEOLOCATION => \Climbingatlas\NovaFieldGeolocation\Geolocation::class,
                 PropertyTypeEnum::POINT => \Climbingatlas\NovaFieldPoint\Point::class,
                 PropertyTypeEnum::ADDRESS => \Climbingatlas\NovaFieldAddress\Address::class,
+                PropertyTypeEnum::MONEY_AMOUNT => Text::class,
             };
         }
     }
@@ -145,6 +150,7 @@ class PropertyDefinition extends Definition
             PropertyTypeEnum::GEOLOCATION,
             PropertyTypeEnum::POINT,
             PropertyTypeEnum::ADDRESS => 'json',
+            PropertyTypeEnum::MONEY_AMOUNT => 'json',
             PropertyTypeEnum::ENUM => throw new Exception(
                 sprintf('Enum property should be instance of "%s"', EnumPropertyDefinition::class)
             ),
@@ -196,7 +202,7 @@ class PropertyDefinition extends Definition
     {
         return match ($this->type) {
             PropertyTypeEnum::ID,
-            PropertyTypeEnum::ULID => ['ulid'],
+            PropertyTypeEnum::ULID => $this->determineRulesUlid(),
             PropertyTypeEnum::INTEGER => ['integer'],
             PropertyTypeEnum::STRING => ['string', 'max:255'],
             PropertyTypeEnum::TEXT => ['string'],
@@ -212,10 +218,23 @@ class PropertyDefinition extends Definition
             PropertyTypeEnum::IMAGE_COLLECTION,
             PropertyTypeEnum::VIDEO,
             PropertyTypeEnum::VIDEO_COLLECTION => [],
+            PropertyTypeEnum::MONEY_AMOUNT => [],
             PropertyTypeEnum::ENUM => throw new Exception(
                 sprintf('Enum property should be instance of "%s"', EnumPropertyDefinition::class),
             ),
         };
+    }
+
+    /**
+     * @return string[]
+     */
+    private function determineRulesUlid(): array
+    {
+        if ($this->fromRelation instanceof RelationMonomorphicDefinition) {
+            return ['regex:/^' . $this->fromRelation->counterModelDefinition->ulidPrefix . '_[0-9A-HJKMNP-TV-Z]{26}$/'];
+        } else {
+            return ['ulid'];
+        }
     }
 
     /**

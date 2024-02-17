@@ -82,7 +82,7 @@ abstract class RelationDefinition extends Definition
                         ),
                         index: $this->index,
                         isInherited: false,
-                        isFromRelation: true,
+                        fromRelation: $this,
                     ),
                 ],
             ),
@@ -110,7 +110,7 @@ abstract class RelationDefinition extends Definition
                         ),
                         index: $this->index,
                         isInherited: false,
-                        isFromRelation: true,
+                        fromRelation: $this,
                     ),
                     new PropertyDefinition(
                         name: $this->name . '_id',
@@ -133,7 +133,7 @@ abstract class RelationDefinition extends Definition
                         ),
                         index: $this->index,
                         isInherited: false,
-                        isFromRelation: true,
+                        fromRelation: $this,
                     ),
                 ]
             ),

@@ -388,7 +388,11 @@ class GeneratorModel extends Generator
 
         $body .= ']);' . PHP_EOL . PHP_EOL;
 
-        $body .= "return \${$modelVariable};" . PHP_EOL;
+        if ($this->definition->relations->getEagerLoadable()->isEmpty()) {
+            $body .= "return \${$modelVariable};" . PHP_EOL;
+        } else {
+            $body .= "return \${$modelVariable}->load(\${$modelVariable}->with);" . PHP_EOL;
+        }
 
         $method->setBody($body);
     }

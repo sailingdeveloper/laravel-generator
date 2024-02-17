@@ -22,4 +22,5 @@ enum PropertyTypeEnum: string
     case VIDEO = 'VIDEO';
     case VIDEO_COLLECTION = 'VIDEO[]';
     case ADDRESS = 'ADDRESS';
+    case MONEY_AMOUNT = 'MONEY_AMOUNT';
 }

@@ -24,7 +24,7 @@ class MediaPropertyDefinition extends PropertyDefinition
         ?string $index,
         public bool $asynchronousUpload,
         bool $isInherited = false,
-        bool $isFromRelation = false,
+        ?RelationDefinition $fromRelation = null,
     ) {
         parent::__construct(
             $name,
@@ -38,7 +38,7 @@ class MediaPropertyDefinition extends PropertyDefinition
             $novaPropertyDefinition,
             $index,
             $isInherited,
-            $isFromRelation,
+            $fromRelation,
         );
     }
 }

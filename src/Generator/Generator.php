@@ -20,12 +20,21 @@ abstract class Generator
 
     public function writeNamespaceToFile(string $fileName, PhpNamespace $namespace): void
     {
-        @mkdir(app_path() . DIRECTORY_SEPARATOR . dirname($fileName), 0777, true);
-
         $printer = new PsrPrinter();
-        file_put_contents(
+
+        $this->writeContentToFile(
             app_path() . DIRECTORY_SEPARATOR . $fileName,
-            '<?php' . PHP_EOL . PHP_EOL . $printer->printNamespace($namespace),
+            '<?php' . PHP_EOL . $printer->printNamespace($namespace),
+        );
+    }
+
+    protected function writeContentToFile(string $fileName, string $content): void
+    {
+        @mkdir(dirname($fileName), 0777, true);
+
+        file_put_contents(
+            $fileName,
+            trim($content) . PHP_EOL,
         );
     }
 

@@ -376,7 +376,8 @@
                                         "INTEGER",
                                         "TIMESTAMP",
                                         "GEOLOCATION",
-                                        "POINT"
+                                        "POINT",
+                                        "MONEY_AMOUNT"
                                     ]
                                 },
                                 "label": {"$ref": "#/definitions/label"},
