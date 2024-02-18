@@ -68,6 +68,7 @@ abstract class RelationDefinition extends Definition
                         label: Str::of($this->name)->title()->append(' ID'),
                         isRequired: $this->isRequired,
                         isComputed: false,
+                        isAppendedInResource: false,
                         rules: [],
                         requestDefinition: new RequestDefinition(
                             name: $this->name . '_id',
@@ -96,6 +97,7 @@ abstract class RelationDefinition extends Definition
                         label: Str::of($this->name)->title()->append(' Type'),
                         isRequired: $this->isRequired,
                         isComputed: false,
+                        isAppendedInResource: false,
                         rules: [],
                         requestDefinition: new RequestDefinition(
                             name: $this->name . '_type',
@@ -119,6 +121,7 @@ abstract class RelationDefinition extends Definition
                         label: Str::of($this->name)->title()->append(' ID'),
                         isRequired: $this->isRequired,
                         isComputed: false,
+                        isAppendedInResource: false,
                         rules: [],
                         requestDefinition: new RequestDefinition(
                             name: $this->name . '_id',

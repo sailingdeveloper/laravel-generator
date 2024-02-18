@@ -287,12 +287,14 @@ class GeneratorModel extends Generator
         $allPropertyRequired = $this->definition->properties
             ->getNonInherited()
             ->getNonComputed()
+            ->getNonAppendedInResource()
             ->getNonRelation()
             ->getNonMedia()
             ->getRequired();
         $allPropertyNonRequired = $this->definition->properties
             ->getNonInherited()
             ->getNonComputed()
+            ->getNonAppendedInResource()
             ->getNonRelation()
             ->getNonMedia()
             ->getNonRequired();

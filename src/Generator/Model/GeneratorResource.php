@@ -51,7 +51,7 @@ class GeneratorResource extends Generator
             Str::of($this->definition->namespace->getName())
                 ->explode('\\')
                 ->add('Resource')
-                ->join('\\')
+                ->join('\\'),
         );
         $class = $namespace->addClass($this->definition->name . 'Resource');
         $namespace->addUse($namespace->getName() . '\\Generated\\' . $this->definition->name . 'ResourceBase');
@@ -72,7 +72,7 @@ class GeneratorResource extends Generator
                 ->explode('\\')
                 ->add('Resource')
                 ->add('Generated')
-                ->join('\\')
+                ->join('\\'),
         );
         $class = $namespace->addClass($this->definition->name . 'ResourceBase')
             ->setAbstract();
@@ -80,6 +80,30 @@ class GeneratorResource extends Generator
         $namespace->addUse(Resource::class);
         $class->setExtends(Resource::class);
         $this->addClassHeaderGenerator($class);
+
+        /** @var PropertyDefinition $propertyDefinition */
+        foreach ($this->definition->properties->getAllAppendedInResource() as $propertyDefinition) {
+            $property = $class->addProperty($propertyDefinition->name);
+            $property->setType($propertyDefinition->toPhpDocType());
+            $property->setProtected();
+
+            if ($propertyDefinition->isRequired) {
+                // Not nullable.
+            } else {
+                $property->setInitialized(true);
+                $property->setNullable();
+            }
+
+            $class->addMethod('with' . Str::studly($propertyDefinition->name))
+                ->setReturnType('static')
+                ->setBody(<<<PHP
+\$this->{$propertyDefinition->name} = \$value;
+
+return \$this;
+PHP)
+                ->addParameter('value')
+                ->setType($propertyDefinition->toPhpDocType());
+        }
 
         $method = $class->addMethod('toArray')
             ->setReturnType('array')
@@ -168,7 +192,11 @@ class GeneratorResource extends Generator
 
                 return 'MediaResource::make($resource->' . $property->name . ')';
             default:
-                return $property->generateGetter('$resource');
+                if ($property->isAppendedInResource) {
+                    return $property->generateGetter('$this');
+                } else {
+                    return $property->generateGetter('$resource');
+                }
         }
     }
 }

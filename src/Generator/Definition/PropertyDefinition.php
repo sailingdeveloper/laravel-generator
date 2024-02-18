@@ -46,6 +46,7 @@ class PropertyDefinition extends Definition
         public string $label,
         public bool $isRequired,
         public bool $isComputed,
+        public bool $isAppendedInResource,
         public array $rules,
         public RequestDefinition $requestDefinition,
         public NovaDefinition $novaPropertyDefinition,

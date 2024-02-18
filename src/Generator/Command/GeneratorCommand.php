@@ -277,6 +277,7 @@ class GeneratorCommand extends Command
                 label: 'ID',
                 isRequired: true,
                 isComputed: false,
+                isAppendedInResource: false,
                 rules: [],
                 requestDefinition: new RequestDefinition(
                     name: 'id',
@@ -300,6 +301,7 @@ class GeneratorCommand extends Command
                 label: 'ULID',
                 isRequired: true,
                 isComputed: false,
+                isAppendedInResource: false,
                 rules: [],
                 requestDefinition: new RequestDefinition(
                     name: 'id',
@@ -324,6 +326,7 @@ class GeneratorCommand extends Command
                 label: 'Created',
                 isRequired: true,
                 isComputed: false,
+                isAppendedInResource: false,
                 rules: [],
                 requestDefinition: new RequestDefinition(
                     name: 'created_at',
@@ -347,6 +350,7 @@ class GeneratorCommand extends Command
                 label: 'Updated',
                 isRequired: true,
                 isComputed: false,
+                isAppendedInResource: false,
                 rules: [],
                 requestDefinition: new RequestDefinition(
                     name: 'updated_at',
@@ -391,6 +395,7 @@ class GeneratorCommand extends Command
                 label: $propertyDefinition['label'] ?? Str::of($propertyName)->replace('_', ' ')->title(),
                 isRequired: $propertyDefinition['required'],
                 isComputed: $propertyDefinition['computed'] ?? false,
+                isAppendedInResource: $propertyDefinition['appended'] ?? false,
                 rules: $propertyDefinition['rules'] ?? [],
                 requestDefinition: $this->parseRequest($propertyName, $propertyDefinition, default: RequestStatusEnum::INCLUDE),
                 novaPropertyDefinition: new NovaDefinition(
@@ -398,8 +403,8 @@ class GeneratorCommand extends Command
                     type: $propertyDefinition['nova']['type'] ?? null,
                     shouldShowOnIndex: $propertyDefinition['nova']['shouldShowOnIndex'] ?? true,
                     shouldShowOnDetail: $propertyDefinition['nova']['shouldShowOnDetail'] ?? true,
-                    shouldShowWhenCreating: $propertyDefinition['nova']['shouldShowWhenCreating'] ?? empty($propertyDefinition['computed']),
-                    shouldShowWhenUpdating: $propertyDefinition['nova']['shouldShowWhenUpdating'] ?? empty($propertyDefinition['computed']),
+                    shouldShowWhenCreating: $propertyDefinition['nova']['shouldShowWhenCreating'] ?? (empty($propertyDefinition['computed']) && empty($propertyDefinition['appended'])),
+                    shouldShowWhenUpdating: $propertyDefinition['nova']['shouldShowWhenUpdating'] ?? (empty($propertyDefinition['computed']) && empty($propertyDefinition['appended'])),
                 ),
                 index: $propertyDefinition['index'] ?? null,
             )
@@ -486,6 +491,7 @@ class GeneratorCommand extends Command
                 label: $propertyDefinition['label'] ?? Str::of($propertyName)->replace('_', ' ')->title(),
                 isRequired: $propertyDefinition['required'],
                 isComputed: $propertyDefinition['computed'] ?? false,
+                isAppendedInResource: $propertyDefinition['appended'] ?? false,
                 rules: $propertyDefinition['rules'] ?? [],
                 requestDefinition: $this->parseRequest($propertyName, $propertyDefinition, default: RequestStatusEnum::INCLUDE),
                 novaPropertyDefinition: new NovaDefinition(
@@ -494,8 +500,8 @@ class GeneratorCommand extends Command
                     help: $relationDefinition['nova']['help'] ?? null,
                     shouldShowOnIndex: $propertyDefinition['nova']['shouldShowOnIndex'] ?? true,
                     shouldShowOnDetail: $propertyDefinition['nova']['shouldShowOnDetail'] ?? true,
-                    shouldShowWhenCreating: $propertyDefinition['nova']['shouldShowWhenCreating'] ?? empty($propertyDefinition['computed']),
-                    shouldShowWhenUpdating: $propertyDefinition['nova']['shouldShowWhenUpdating'] ?? empty($propertyDefinition['computed']),
+                    shouldShowWhenCreating: $propertyDefinition['nova']['shouldShowWhenCreating'] ?? (empty($propertyDefinition['computed']) && empty($propertyDefinition['appended'])),
+                    shouldShowWhenUpdating: $propertyDefinition['nova']['shouldShowWhenUpdating'] ?? (empty($propertyDefinition['computed']) && empty($propertyDefinition['appended'])),
                 ),
                 index: $propertyDefinition['index'] ?? $propertyName,
                 choices: new EnumChoiceCollection(
@@ -517,6 +523,7 @@ class GeneratorCommand extends Command
                 label: $propertyDefinition['label'] ?? Str::of($propertyName)->replace('_', ' ')->title(),
                 isRequired: $propertyDefinition['required'],
                 isComputed: $propertyDefinition['computed'] ?? false,
+                isAppendedInResource: $propertyDefinition['appended'] ?? false,
                 rules: $propertyDefinition['rules'] ?? [],
                 requestDefinition: $this->parseRequest($propertyName, $propertyDefinition, default: RequestStatusEnum::INCLUDE),
                 novaPropertyDefinition: new NovaDefinition(
@@ -525,8 +532,8 @@ class GeneratorCommand extends Command
                     help: $relationDefinition['nova']['help'] ?? null,
                     shouldShowOnIndex: $propertyDefinition['nova']['shouldShowOnIndex'] ?? true,
                     shouldShowOnDetail: $propertyDefinition['nova']['shouldShowOnDetail'] ?? true,
-                    shouldShowWhenCreating: $propertyDefinition['nova']['shouldShowWhenCreating'] ?? empty($propertyDefinition['computed']),
-                    shouldShowWhenUpdating: $propertyDefinition['nova']['shouldShowWhenUpdating'] ?? empty($propertyDefinition['computed']),
+                    shouldShowWhenCreating: $propertyDefinition['nova']['shouldShowWhenCreating'] ?? (empty($propertyDefinition['computed']) && empty($propertyDefinition['appended'])),
+                    shouldShowWhenUpdating: $propertyDefinition['nova']['shouldShowWhenUpdating'] ?? (empty($propertyDefinition['computed']) && empty($propertyDefinition['appended'])),
                 ),
                 index: $propertyDefinition['index'] ?? $propertyName,
                 enumName: $propertyDefinition['enum'],
@@ -548,6 +555,7 @@ class GeneratorCommand extends Command
             label: $propertyDefinition['label'] ?? Str::of($propertyName)->replace('_', ' ')->title(),
             isRequired: $propertyDefinition['required'],
             isComputed: $propertyDefinition['computed'] ?? false,
+            isAppendedInResource: $propertyDefinition['appended'] ?? false,
             rules: $propertyDefinition['rules'] ?? [],
             requestDefinition: $this->parseRequest($propertyName, $propertyDefinition, default: RequestStatusEnum::INCLUDE),
             novaPropertyDefinition: new NovaDefinition(...['name' => $propertyName, ...$propertyDefinition['nova'] ?? []]),
@@ -565,6 +573,7 @@ class GeneratorCommand extends Command
             label: $propertyDefinition['label'] ?? Str::of($propertyName)->replace('_', ' ')->title(),
             isRequired: $propertyDefinition['required'],
             isComputed: $propertyDefinition['computed'] ?? false,
+            isAppendedInResource: $propertyDefinition['appended'] ?? false,
             rules: $propertyDefinition['rules'] ?? [],
             requestDefinition: $this->parseRequest($propertyName, $propertyDefinition, default: RequestStatusEnum::INCLUDE),
             novaPropertyDefinition: new NovaDefinition(...['name' => $propertyName, ...$propertyDefinition['nova'] ?? []]),
@@ -705,6 +714,7 @@ class GeneratorCommand extends Command
                 label: 'Geolocation',
                 isRequired: false,
                 isComputed: false,
+                isAppendedInResource: false,
                 rules: [],
                 requestDefinition: new RequestDefinition(
                     name: 'geolocation',
@@ -733,6 +743,7 @@ class GeneratorCommand extends Command
                     label: 'Address',
                     isRequired: false,
                     isComputed: false,
+                    isAppendedInResource: false,
                     rules: [],
                     requestDefinition: new RequestDefinition(
                         name: 'address',
@@ -777,6 +788,7 @@ class GeneratorCommand extends Command
                 label: 'Review Message',
                 isRequired: false,
                 isComputed: false,
+                isAppendedInResource: false,
                 rules: [],
                 requestDefinition: new RequestDefinition(
                     name: 'review_message',
@@ -808,6 +820,7 @@ class GeneratorCommand extends Command
                 label: 'Deleted',
                 isRequired: false,
                 isComputed: false,
+                isAppendedInResource: false,
                 rules: [],
                 requestDefinition: new RequestDefinition(
                     name: 'deleted_at',

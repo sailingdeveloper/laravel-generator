@@ -58,6 +58,14 @@ class PropertyCollection extends Collection
     /**
      * @return PropertyCollection<PropertyDefinition>
      */
+    public function getNonAppendedInResource(): PropertyCollection
+    {
+        return $this->filter(fn (PropertyDefinition $property) => $property->isAppendedInResource === false);
+    }
+
+    /**
+     * @return PropertyCollection<PropertyDefinition>
+     */
     public function getNonMedia(): PropertyCollection
     {
         return $this->filter(fn (PropertyDefinition $property) => $property->isMedia() === false);
@@ -133,6 +141,7 @@ class PropertyCollection extends Collection
                 [RequestStatusEnum::INCLUDE, RequestStatusEnum::INCLUDE_CONDITIONALLY],
             ))
             ->filter(fn (PropertyDefinition $property) => $property->isComputed === false)
+            ->filter(fn (PropertyDefinition $property) => $property->isAppendedInResource === false)
             ->filter(
                 fn (PropertyDefinition $property) => in_array(
                     $property->requestDefinition->createStatus,
@@ -152,6 +161,7 @@ class PropertyCollection extends Collection
                 [RequestStatusEnum::INCLUDE, RequestStatusEnum::INCLUDE_CONDITIONALLY],
             ))
             ->filter(fn (PropertyDefinition $property) => $property->isComputed === false)
+            ->filter(fn (PropertyDefinition $property) => $property->isAppendedInResource === false)
             ->filter(
                 fn (PropertyDefinition $property) => in_array(
                     $property->requestDefinition->updateStatus,
@@ -193,6 +203,14 @@ class PropertyCollection extends Collection
                 },
             )
             ->filter(fn (PropertyDefinition $property): bool => $property->index !== null);
+    }
+
+    /**
+     * @return PropertyCollection<PropertyDefinition>
+     */
+    public function getAllAppendedInResource(): PropertyCollection
+    {
+        return $this->filter(fn (PropertyDefinition $property) => $property->isAppendedInResource);
     }
 
     /**
