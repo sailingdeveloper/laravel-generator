@@ -17,6 +17,7 @@ use SailingDeveloper\LaravelGenerator\Generator\Definition\ModelDefinition;
 use SailingDeveloper\LaravelGenerator\Generator\Definition\PropertyDefinition;
 use SailingDeveloper\LaravelGenerator\Generator\Definition\RelationDefinition;
 use SailingDeveloper\LaravelGenerator\Generator\Definition\RelationMonomorphicDefinition;
+use SailingDeveloper\LaravelGenerator\Generator\Definition\RelationPolymorphicDefinition;
 use SailingDeveloper\LaravelGenerator\Generator\Generator;
 use Spatie\Image\Manipulations;
 use Spatie\MediaLibrary\HasMedia;
@@ -114,6 +115,20 @@ class GeneratorTypeScriptType extends Generator
                     }
                 default:
                     throw new Exception(sprintf('Unknown relation type "%s".', $relation->type));
+            }
+        } elseif ($relation instanceof RelationPolymorphicDefinition) {
+            $allTypeName = [];
+
+            foreach ($relation->allCounterModelDefinition as $counterModelDefinition) {
+                $allTypeName[] = $counterModelDefinition->name . 'Type';
+            }
+
+            $typeName = implode(' | ', $allTypeName);
+
+            if ($relation->isRequired && $relation->shouldEagerLoad) {
+                return $typeName;
+            } else {
+                return $typeName . ' | null';
             }
         } else {
             throw new Exception(sprintf('Unknown relation type "%s".', $relation::class));
