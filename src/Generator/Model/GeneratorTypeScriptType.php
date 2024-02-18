@@ -55,7 +55,7 @@ class GeneratorTypeScriptType extends Generator
             ->explode('\\')
             ->add('Type')
             ->add('Generated')
-            ->add('types.d.ts')
+            ->add('types.ts')
             ->join(DIRECTORY_SEPARATOR);
 
         $this->writeContentToFile(
@@ -131,9 +131,10 @@ class GeneratorTypeScriptType extends Generator
                 PropertyTypeEnum::STRING,
                 PropertyTypeEnum::TIMESTAMP,
                 PropertyTypeEnum::ULID => 'string',
+
                 PropertyTypeEnum::INTEGER => 'number',
-                PropertyTypeEnum::JSON_OBJECT => 'Record<string, unknown>',
-                PropertyTypeEnum::JSON_ARRAY => 'unknown[]',
+                PropertyTypeEnum::JSON_OBJECT => 'Record<string, string>',
+                PropertyTypeEnum::JSON_ARRAY => 'string[]',
                 PropertyTypeEnum::GEOLOCATION => 'GeolocationType',
                 PropertyTypeEnum::POINT => 'PointType',
                 PropertyTypeEnum::FILE => 'FileType',
@@ -178,8 +179,8 @@ class GeneratorTypeScriptType extends Generator
             ->snake('-');
 
         $this->writeContentToFile(
-            "{$directory}/app/{$domain}/types.d.ts",
-            file_get_contents(app_path() . "/{$this->domain}/Type/Generated/types.d.ts"),
+            "{$directory}/app/{$domain}/types.ts",
+            file_get_contents(app_path() . "/{$this->domain}/Type/Generated/types.ts"),
         );
     }
 }
