@@ -231,7 +231,7 @@ class PropertyDefinition extends Definition
      */
     private function determineRulesUlid(): array
     {
-        if ($this->fromRelation instanceof RelationMonomorphicDefinition) {
+        if ($this->fromRelation instanceof RelationMonomorphicDefinition && config('laravel-generator.ulid_prefix')) {
             return ['regex:/^' . $this->fromRelation->counterModelDefinition->ulidPrefix . '_[0-9A-HJKMNP-TV-Z]{26}$/'];
         } else {
             return ['ulid'];
